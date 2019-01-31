@@ -10,6 +10,9 @@
 *.ncb
 *.pdb
 *.idb
+*.dep
+*.ilk
+*.suo
 
 
 # Precompiled Headers
