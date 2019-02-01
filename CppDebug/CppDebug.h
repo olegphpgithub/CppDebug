@@ -12,7 +12,6 @@ public:
     ~CppDebug(void);
     static LPTSTR getLogFileName();
     static void log(LPCTSTR str);
-    static void log(const char *str);
     static void log(INT arg);
     static void log(LONG arg);
     static void log(DWORD arg);
