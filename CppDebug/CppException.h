@@ -3,12 +3,22 @@
 #include <iostream>
 #include <windows.h>
 
+#define ERROR_REPORTING 0;
+
+#if ERROR_REPORTING == 1
+    #define RAISE_APPLICATION_ERROR(FILE, LINE, ERROR, ERRNO) \
+        throw new CppException(TEXT(FILE), LINE, ERROR, ERRNO)
+#else if ERROR_REPORTING == 0
+    #define RAISE_APPLICATION_ERROR(FILE, LINE, ERROR, ERRNO) \
+        throw new CppException(ERROR, ERRNO)
+#endif
+
 class CppException
 {
 public:
     CppException(HRESULT hr);
     CppException(LPCTSTR error, HRESULT hr);
-    CppException(const char *file, int line, LPCTSTR error, HRESULT hr);
+    CppException(LPCTSTR file, int line, LPCTSTR error, HRESULT hr);
     ~CppException(void);
     
     void CppInitialize(void);

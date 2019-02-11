@@ -13,29 +13,19 @@ CppException::~CppException(void)
     
 }
 
-
-CppException::CppException(const char *file, int line,
+CppException::CppException(LPCTSTR file, int line,
     LPCTSTR error, HRESULT hr) {
     
     CppInitialize();
     
     size_t sizeInWords = 0;
     
-#ifdef _UNICODE
-    size_t wcfile = 0;
-    StringCchLengthA(file, STRSAFE_MAX_CCH, &wcfile);
-    size_t bcfile = (wcfile + 1) * sizeof(TCHAR);
-    wcFilePath = (TCHAR *)LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, bcfile);
-    size_t ReturnSize = 0;
-    mbstowcs_s(&ReturnSize, wcFilePath, wcfile + 1, file, wcfile);
-#else
     size_t bcfile = 0;
-    StringCchLengthA(file, STRSAFE_MAX_CCH, &bcfile);
+    StringCchLength(file, STRSAFE_MAX_CCH, &bcfile);
     bcfile++;
-    wcFilePath=(TCHAR *) LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, bcfile);
-    StringCbCopy(wcFilePath, bcfile, file);
-#endif
-
+    wcFilePath=(TCHAR *) LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, bcfile * sizeof(TCHAR));
+    StringCchCopy(wcFilePath, bcfile, file);
+    
     iLineCode = line;
     
     size_t wcerror = 0;
@@ -43,7 +33,7 @@ CppException::CppException(const char *file, int line,
     size_t bcerror = (wcerror + 1) * sizeof(TCHAR);
     wcError = (TCHAR *)LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, bcerror);
     StringCbCopy(wcError, bcerror, error);
-
+    
     herr = hr;
     
 }
