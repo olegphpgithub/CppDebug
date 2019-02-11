@@ -3,13 +3,13 @@
 #include <iostream>
 #include <windows.h>
 
-#define ERROR_REPORTING 0;
+#define ERROR_REPORTING 1
 
 #if ERROR_REPORTING == 1
-    #define RAISE_APPLICATION_ERROR(FILE, LINE, ERROR, ERRNO) \
-        throw new CppException(TEXT(FILE), LINE, ERROR, ERRNO)
+    #define RAISE_APPLICATION_ERROR(ERROR, ERRNO) \
+        throw new CppException(TEXT(__FILE__), __LINE__, ERROR, ERRNO)
 #else if ERROR_REPORTING == 0
-    #define RAISE_APPLICATION_ERROR(FILE, LINE, ERROR, ERRNO) \
+    #define RAISE_APPLICATION_ERROR(ERROR, ERRNO) \
         throw new CppException(ERROR, ERRNO)
 #endif
 
