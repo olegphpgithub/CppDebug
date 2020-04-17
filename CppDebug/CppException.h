@@ -16,17 +16,14 @@
 class CppException
 {
 public:
-    CppException(HRESULT hr);
-    CppException(LPCTSTR error, HRESULT hr);
-    CppException(LPCTSTR file, int line, LPCTSTR error, HRESULT hr);
+    CppException(void);
+    CppException(CppException &obj);
     ~CppException(void);
+    CppException(LPCTSTR error, DWORD errcode);
+    CppException(LPCTSTR file, int line, LPCTSTR error, DWORD errcode);
     
-    void CppInitialize(void);
-    
-    static void log(HRESULT hr);
-    
-    TCHAR *wcFilePath;
-    int iLineCode;
-    TCHAR *wcError;
-    HRESULT herr;
+    TCHAR m_szFilePath[MAX_PATH];
+    int m_iLineCode;
+    TCHAR *m_szError;
+    DWORD m_dwErrno;
 };

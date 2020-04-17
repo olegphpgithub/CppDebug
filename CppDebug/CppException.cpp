@@ -5,63 +5,84 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
 
+CppException::CppException(void)
+{
+    memset(m_szFilePath, 0, MAX_PATH * sizeof(TCHAR));
+    m_iLineCode = 0;
+    m_szError = NULL;
+    m_dwErrno = ERROR_SUCCESS;
+}
+
+CppException::CppException(CppException &obj)
+{
+    
+    _tcscpy_s(m_szFilePath, MAX_PATH, obj.m_szFilePath);
+    
+    m_iLineCode = obj.m_iLineCode;
+    
+    if (obj.m_szError != NULL)
+    {
+        m_szError = new TCHAR[_tcslen(obj.m_szError) + 1];
+        _tcscpy_s(m_szError, _tcslen(obj.m_szError) + 1, obj.m_szError);
+    } else {
+        m_szError = NULL;
+    }
+    
+    m_dwErrno = obj.m_dwErrno;
+    
+}
 
 CppException::~CppException(void)
 {
-    
+    if (m_szError != NULL)
+    {
+        delete []m_szError;
+    }
 }
 
-CppException::CppException(LPCTSTR file, int line,
-    LPCTSTR error, HRESULT hr) {
+CppException::CppException(LPCTSTR file,
+                           int line,
+                           LPCTSTR error,
+                           DWORD errcode)
+{
+    if(file != NULL)
+    {
+        _tcscpy_s(m_szFilePath, MAX_PATH, file);
+    } else {
+        memset(m_szFilePath, 0, MAX_PATH * sizeof(TCHAR));
+    }
     
-    CppInitialize();
+    m_iLineCode = line;
     
-    size_t sizeInWords = 0;
+    if(error != NULL)
+    {
+        m_szError = new TCHAR[_tcslen(error) + 1];
+        _tcscpy_s(m_szError, _tcslen(error) + 1, error);
+    } else {
+        m_szError = new TCHAR(0);
+    }
     
-    size_t bcfile = 0;
-    StringCchLength(file, STRSAFE_MAX_CCH, &bcfile);
-    bcfile++;
-    wcFilePath=(TCHAR *) LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, bcfile * sizeof(TCHAR));
-    StringCchCopy(wcFilePath, bcfile, file);
-    
-    iLineCode = line;
-    
-    size_t wcerror = 0;
-    StringCchLength(error, STRSAFE_MAX_CCH, &wcerror);
-    size_t bcerror = (wcerror + 1) * sizeof(TCHAR);
-    wcError = (TCHAR *)LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, bcerror);
-    StringCbCopy(wcError, bcerror, error);
-    
-    herr = hr;
-    
-}
-
-
-CppException::CppException(LPCTSTR error, HRESULT hr) {
-    
-    CppInitialize();
-    
-    size_t wcerror = 0;
-    StringCchLength(error, STRSAFE_MAX_CCH, &wcerror);
-    size_t bcerror = (wcerror + 1) * sizeof(TCHAR);
-    wcError = (TCHAR *)LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT, bcerror);
-    StringCbCopy(wcError, bcerror, error);
-
-    herr = hr;
+    m_dwErrno = errcode;
     
 }
 
 
-void CppException::CppInitialize(void) {
-    wcFilePath = NULL;
-    iLineCode = 0;
-    herr = S_OK;
-}
-
-
-void CppException::log(HRESULT hr) {
+CppException::CppException(LPCTSTR error, DWORD errcode)
+{
     
+    memset(m_szFilePath, 0, MAX_PATH * sizeof(TCHAR));
+    
+    m_iLineCode = 0;
+    
+    if(error != NULL)
+    {
+        m_szError = new TCHAR[_tcslen(error) + 1];
+        _tcscpy_s(m_szError, _tcslen(error) + 1, error);
+    } else {
+        m_szError = new TCHAR(0);
+    }
+    
+    m_dwErrno = errcode;
     
 }
