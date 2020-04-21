@@ -12,6 +12,7 @@ CppException::CppException(void)
     m_iLineCode = 0;
     m_szError = NULL;
     m_dwErrno = ERROR_SUCCESS;
+    m_stack = NULL;
 }
 
 CppException::CppException(CppException &obj)
@@ -31,6 +32,7 @@ CppException::CppException(CppException &obj)
     
     m_dwErrno = obj.m_dwErrno;
     
+    m_stack = obj.m_stack;
 }
 
 CppException::~CppException(void)
@@ -38,6 +40,10 @@ CppException::~CppException(void)
     if (m_szError != NULL)
     {
         delete []m_szError;
+    }
+    if (m_stack != NULL)
+    {
+        delete m_stack;
     }
 }
 
@@ -65,6 +71,7 @@ CppException::CppException(LPCTSTR file,
     
     m_dwErrno = errcode;
     
+    m_stack = NULL;
 }
 
 
@@ -85,4 +92,42 @@ CppException::CppException(LPCTSTR error, DWORD errcode)
     
     m_dwErrno = errcode;
     
+    m_stack = NULL;
+}
+
+
+std::vector<std::basic_string<TCHAR> > CppException::GetStackTrace()
+{
+    std::vector<std::basic_string<TCHAR> > stack_trace;
+    if (m_stack != NULL)
+    {
+        stack_trace = m_stack->GetStackTrace();
+    }
+    if( (_tcslen(m_szFilePath) > 0) && (m_iLineCode > 0) )
+    {
+        LPCTSTR szFormat = TEXT("%s:%d: %s: 0x%08lX");
+        TCHAR szMessage[1024];
+        _sntprintf_s(szMessage,
+            1024,
+            _TRUNCATE,
+            szFormat,
+            m_szFilePath,
+            m_iLineCode,
+            m_szError,
+            m_dwErrno);
+        stack_trace.insert(stack_trace.begin(), szMessage);
+    }
+    else
+    {
+        LPCTSTR szFormat = TEXT("%s: 0x%08lX");
+        TCHAR szMessage[1024];
+        _sntprintf_s(szMessage,
+            1024,
+            _TRUNCATE,
+            szFormat,
+            m_szError,
+            m_dwErrno);
+        stack_trace.insert(stack_trace.begin(), szMessage);
+    }
+    return stack_trace;
 }
