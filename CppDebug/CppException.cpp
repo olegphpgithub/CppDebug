@@ -160,8 +160,8 @@ std::basic_string<TCHAR> CppException::GetFormatMessage(DWORD errcode)
     if(lpszMsgBuf != NULL)
     {
         mess.assign(lpszMsgBuf);
-        mess.erase(0, mess.find_first_not_of("\t\n\v\f\r "));
-        mess.erase(mess.find_last_not_of("\t\n\v\f\r ") + 1);
+        mess.erase(0, mess.find_first_not_of(TEXT("\t\n\v\f\r ")));
+        mess.erase(mess.find_last_not_of(TEXT("\t\n\v\f\r ")) + 1);
         LocalFree(lpszMsgBuf);
     }
     return mess;
