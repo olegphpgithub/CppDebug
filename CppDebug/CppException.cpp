@@ -123,3 +123,44 @@ std::vector<std::basic_string<TCHAR> > CppException::GetStackTrace()
     }
     return stack_trace;
 }
+
+
+std::basic_string<TCHAR> CppException::GetFormatMessage(DWORD errcode)
+{
+    LPTSTR lpszMsgBuf = NULL;
+
+    if( (errcode >= 12001) && (errcode <= 12156) )
+    {
+        FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_HMODULE |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            GetModuleHandle(TEXT("WinInet.dll")),
+            errcode,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR)&lpszMsgBuf,
+            0,
+            NULL);
+    }
+    else
+    {
+        FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            errcode,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR)&lpszMsgBuf,
+            0,
+            NULL);
+    }
+
+    std::basic_string<TCHAR> mess(TEXT(""));
+    if(lpszMsgBuf != NULL)
+    {
+        mess.assign(lpszMsgBuf);
+        LocalFree(lpszMsgBuf);
+    }
+    return mess;
+}

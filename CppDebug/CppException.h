@@ -31,6 +31,7 @@ public:
         DWORD errcode,
         CppException *stack = NULL);
     std::vector<std::basic_string<TCHAR> > GetStackTrace();
+    static std::basic_string<TCHAR> GetFormatMessage(DWORD errcode);
     
     TCHAR m_szFilePath[MAX_PATH];
     int m_iLineCode;
