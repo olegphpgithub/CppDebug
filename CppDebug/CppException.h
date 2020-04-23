@@ -20,11 +20,16 @@ typedef std::vector<std::basic_string<TCHAR> > StackTrace;
 class CppException
 {
 public:
-    CppException(void);
     CppException(CppException &obj);
     ~CppException(void);
-    CppException(LPCTSTR error, DWORD errcode);
-    CppException(LPCTSTR file, int line, LPCTSTR error, DWORD errcode);
+    CppException(LPCTSTR errmess,
+        DWORD errcode,
+        CppException *stack = NULL);
+    CppException(LPCTSTR file,
+        int line,
+        LPCTSTR errmess,
+        DWORD errcode,
+        CppException *stack = NULL);
     std::vector<std::basic_string<TCHAR> > GetStackTrace();
     
     TCHAR m_szFilePath[MAX_PATH];

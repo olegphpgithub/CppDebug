@@ -6,33 +6,23 @@
 #include <fstream>
 
 
-CppException::CppException(void)
-{
-    memset(m_szFilePath, 0, MAX_PATH * sizeof(TCHAR));
-    m_iLineCode = 0;
-    m_szError = NULL;
-    m_dwErrno = ERROR_SUCCESS;
-    m_stack = NULL;
-}
-
 CppException::CppException(CppException &obj)
+                           : m_iLineCode(obj.m_iLineCode),
+                           m_dwErrno(obj.m_dwErrno),
+                           m_stack(obj.m_stack)
 {
-    
     _tcscpy_s(m_szFilePath, MAX_PATH, obj.m_szFilePath);
-    
-    m_iLineCode = obj.m_iLineCode;
     
     if (obj.m_szError != NULL)
     {
         m_szError = new TCHAR[_tcslen(obj.m_szError) + 1];
         _tcscpy_s(m_szError, _tcslen(obj.m_szError) + 1, obj.m_szError);
-    } else {
-        m_szError = NULL;
     }
-    
-    m_dwErrno = obj.m_dwErrno;
-    
-    m_stack = obj.m_stack;
+    else
+    {
+        m_szError = new TCHAR[1];
+        m_szError[0] = TEXT('\0');
+    }
 }
 
 CppException::~CppException(void)
@@ -49,50 +39,52 @@ CppException::~CppException(void)
 
 CppException::CppException(LPCTSTR file,
                            int line,
-                           LPCTSTR error,
-                           DWORD errcode)
+                           LPCTSTR errmess,
+                           DWORD errcode,
+                           CppException *stack)
+                           : m_iLineCode(line),
+                           m_dwErrno(errcode),
+                           m_stack(stack)
 {
     if(file != NULL)
     {
         _tcscpy_s(m_szFilePath, MAX_PATH, file);
-    } else {
+    }
+    else
+    {
         memset(m_szFilePath, 0, MAX_PATH * sizeof(TCHAR));
     }
     
-    m_iLineCode = line;
-    
-    if(error != NULL)
+    if(errmess != NULL)
     {
-        m_szError = new TCHAR[_tcslen(error) + 1];
-        _tcscpy_s(m_szError, _tcslen(error) + 1, error);
-    } else {
-        m_szError = new TCHAR(0);
+        m_szError = new TCHAR[_tcslen(errmess) + 1];
+        _tcscpy_s(m_szError, _tcslen(errmess) + 1, errmess);
     }
-    
-    m_dwErrno = errcode;
-    
-    m_stack = NULL;
+    else
+    {
+        m_szError = new TCHAR[0];
+        m_szError[0] = TEXT('\0');
+    }
 }
 
 
-CppException::CppException(LPCTSTR error, DWORD errcode)
+CppException::CppException(LPCTSTR errmess,
+                           DWORD errcode,
+                           CppException *stack)
+                           : m_dwErrno(errcode),
+                           m_stack(stack)
 {
-    
     memset(m_szFilePath, 0, MAX_PATH * sizeof(TCHAR));
     
     m_iLineCode = 0;
     
-    if(error != NULL)
+    if(errmess != NULL)
     {
-        m_szError = new TCHAR[_tcslen(error) + 1];
-        _tcscpy_s(m_szError, _tcslen(error) + 1, error);
+        m_szError = new TCHAR[_tcslen(errmess) + 1];
+        _tcscpy_s(m_szError, _tcslen(errmess) + 1, errmess);
     } else {
         m_szError = new TCHAR(0);
     }
-    
-    m_dwErrno = errcode;
-    
-    m_stack = NULL;
 }
 
 
